@@ -72,7 +72,6 @@ def delete():
 def testing():
     if request.method == "POST":
         data = request.get_json()
-        # data = request.get_json()
         # data = {
         #     "name": "Tatsuya",
         #     "age": 10,
@@ -180,15 +179,18 @@ def accept():
     
     if find_id(user_id) and find_id(request_id):
         updateFriendRequest(user_id, request_id)
-        user_data = person_profile.find_one({"_id": user_id})
-        request_data = person_profile.find_one({"_id": request_id})
+        # user_data = person_profile.find_one({"_id": user_id})
+        # request_data = person_profile.find_one({"_id": request_id})
         # return jsonify({"message": {user_data}})
-        if user_data['isFriendRequest'] and request_data['isFriendRequest']:
-            addFriends(user_id, request_id)
-            addFriends(request_id, user_id)
-            return jsonify({"message": "Success"})
-        else:
-            return jsonify({"message": "Not work"})
+        addFriends(user_id, request_id)
+        addFriends(request_id, user_id)
+        return jsonify({"message": "Success"})
+        # if user_data['isFriendRequest'] and request_data['isFriendRequest']:
+        #     addFriends(user_id, request_id)
+        #     addFriends(request_id, user_id)
+        #     return jsonify({"message": "Success"})
+        # else:
+        #     return jsonify({"message": "Not work"})
         # if user_data['isFriendRequest'] and friend_data['isFriendRequest']:     
         #     addFriends(user_data)
         #     addFriends(friend_data)

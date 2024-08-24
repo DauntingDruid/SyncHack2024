@@ -57,6 +57,7 @@ def delete():
     except Exception as error:
         return jsonify({"error": "Error"}), 500
 
+# login & signup
 @friend_routes_blueprint.route('/profile', methods=["GET", "POST"])
 def testing():
     if request.method == "POST":
@@ -86,12 +87,15 @@ def testing():
     else:
         try:
             data = person_profile.find()
+            doc = []
             for document in data:
                 printer.pprint(document)
+                doc.append(document)
             print(f"Success")
+            return jsonify(doc[0])
         except Exception as error:
             print(f"Error: {error}")
-        return "Getting your item"
+            return {}
 
 # ------------------------------------------------
 

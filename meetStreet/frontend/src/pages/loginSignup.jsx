@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import signup from "../assets/imgs/signup.svg"
-import { post } from '../utils/http';
+import { post } from '../apis/api';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -10,7 +10,8 @@ const AuthPage = () => {
     };
 
     const loginUser = (e) => {
-        post('login', {
+        console.log("login",e.target.value);
+        post('get', {
             email: e.target.email.value,
             password: e.target.password.value,
         }).then((data) => {
@@ -19,6 +20,7 @@ const AuthPage = () => {
     };
 
     const signupUser = (e) => {
+        console.log("signup",e.target);
         e.preventDefault();
         const formData = new FormData();
         formData.append('name', e.target.name.value);

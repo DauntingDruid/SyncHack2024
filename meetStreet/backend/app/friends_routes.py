@@ -61,23 +61,23 @@ def delete():
 @friend_routes_blueprint.route('/profile', methods=["GET", "POST"])
 def testing():
     if request.method == "POST":
-        # data = request.get_json()
-        data = {
-            "name": "Tatsuya",
-            "age": 10,
-            "gender": "M",
-            "email": "education@gmail.com",
-            "profile_picture": "img01.png",
-            "radius": 100,
-            "interests": [
-                "Eating", "Jogging", "Dancing", "Drinking"
-            ],
-            "friends": [
-                ""
-            ],
-            "friendRequestID": "",
-            "isFriendRequest": False,
-        }
+        data = request.get_json()
+        # data = {
+        #     "name": "Tatsuya",
+        #     "age": 10,
+        #     "gender": "M",
+        #     "email": "education@gmail.com",
+        #     "profile_picture": "img01.png",
+        #     "radius": 100,
+        #     "interests": [
+        #         "Eating", "Jogging", "Dancing", "Drinking"
+        #     ],
+        #     "friends": [
+        #         ""
+        #     ],
+        #     "friendRequestID": "",
+        #     "isFriendRequest": False,
+        # }
         if data:
             res = register_user(data)
             return res, 200

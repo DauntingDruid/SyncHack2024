@@ -1,10 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv, find_dotenv
+from flask_socketio import join_room, leave_room, send, SocketIO
 import os
 import pprint
 from pymongo import MongoClient
 import uuid
 from bson import Binary
+import random
+from string import ascii_uppercase
 load_dotenv(find_dotenv())
 
 app = Flask(__name__)
@@ -284,122 +287,111 @@ def setting(id):
 
 # ------------------------------------------------------------
 
-# def insert_test_doc():
-#     collection = test_db.myDatabase
-#     test_document = {
-#         "name": "Tim",
-#         "type": "Test"
-#     }
-#     inserted_id = collection.insert_one(test_document).inserted_id
-#     print(inserted_id)
+# if __name__ == "__main__":
+#     app.run(debug=True)
 
-# # insert_test_doc()
+socketio = SocketIO(app)
 
-# # automatically created a table
-# production = client.production
-# # automatically created person_collection if it does not exist
-# person_collection = production.person_collection
+rooms = {}
 
-# def create_docuemnts():
-#     first_names = ["Time", "Sarah", "Jannifer", "Jose", "Brad", "Allen"]
-#     last_names = ["Ruscica", "Smith", "Bart", "Cater", "Pit", "Geral"]
-#     ages = [21, 40, 23, 19, 34, 67]
-
-#     docs = []
-#     for first_name, last_name, age in zip(first_names, last_names, ages):
-#         doc = {"first_name": first_name, "last_name": last_name, "age": age}
-#         docs.append(doc)
-#         # person_collection.insert_one(doc)
-#     person_collection.insert_many(docs)
-
-# # create_docuemnts()
-
-# def find_all_people():
-#     people = person_collection.find()
-#     for person in people:
-#         printer.pprint(person)
-
-# # find_all_people()
-
-# def find_tim():
-#     tim = person_collection.find_one({"first_name": "Time"})
-#     printer.pprint(tim)
-# # find_tim()
-
-# def count_all_people():
-#     # We can write both 
-#     count = person_collection.count_documents(filter={})
-#     print("Number of people, ", count)
-# # count_all_people()
-
-# def get_person_by_id(person_id):
-#     from bson.objectid import ObjectId
-#     _id = ObjectId(person_id)
-#     person = person_collection.find_one({"_id": _id})
-#     printer.pprint(person)
-
-# # get_person_by_id("66c9afb734ab4ddcd7193a3a")
-
-# # gte greater than or eeual to 
-# def get_age_range(min_age, max_age):
-#     query = {"$and": [
-#         {"age": {"$gte": min_age}},
-#         {"age": {"$lte": max_age}}
-#     ]}
-#     people = person_collection.find(query).sort("age")
-#     for person in people:
-#         printer.pprint(person)
+def generate_unique_code(length):
+    while True:
+        code = ""
+        for _ in range(length):
+            code += random.choice(ascii_uppercase)
         
-# # get_age_range(20, 35)
-
-# # _id: 0 do not need to have this id 1 need
-# def project_columns():
-#     columns = {"_id": 0, "first_name": 1, "last_name": 1}
-#     people = person_collection.find({}, columns)
-#     for person in people:
-#         printer.pprint(person)
-
-# # project_columns()
-
-# def update_person_by_id(person_id):
-#     from bson.objectid import ObjectId
-#     _id = ObjectId(person_id)
-#     # inc: increment by 1
-#     # all_updates = {
-#     #     "$set": {"new_field": True},
-#     #     "$inc": {"age": 1},
-#     #     "$rename": {"first_name": "first"}
-#     # }
-#     # person_collection.update_one({"_id": _id}, all_updates) 
+        if code not in rooms:
+            break
     
-#     # remove the person
-#     person_collection.update_one({"_id": _id}, {"$unset": {"new_field": ""}})  
-    
-# # replace a document
-# def replace_one(person_id):
-#     from bson.objectid import ObjectId
-#     _id = ObjectId(person_id)
-    
-#     new_doc = {
-#         "first_name": "new first name",
-#         "last_name": "new last name",
-#         "age": 100
-#     }
-#     person_collection.update_one({"_id": _id}, new_doc)
-    
-# # delete 
-# def delete_doc_by_id(person_id):
-#     from bson.objectid import ObjectId
-#     _id = ObjectId(person_id)
-#     person_collection.delete_one({"_id": _id})
-    
-# @app.route('/get-items', methods=["GET"])
-# def items():
-#     # project_columns()
-#     # update_person_by_id("66c9aeff217629086ae1152d")
-#     return "True"
+    return code
 
+@app.route("/chat_setting", methods=["POST", "GET"])
+def chat_setting():
+    session.clear()
+    if request.method == "POST":
+        name = request.form.get("name")
+        code = request.form.get("code")
+        join = request.form.get("join", False)
+        create = request.form.get("create", False)
 
+        # if not name:
+        #     return render_template("home.html", error="Please enter a name.", code=code, name=name)
+
+        # if join != False and not code:
+        #     return render_template("home.html", error="Please enter a room code.", code=code, name=name)
+        
+        room = code
+        if create != False:
+            room = generate_unique_code(4)
+            rooms[room] = {"members": 0, "messages": []}
+        elif code not in rooms:
+            # print("Code is not in a room")
+            return "Code is not in a room"
+            # return redirect(url_for("chat_setting"))
+        
+        session["room"] = room
+        session["name"] = name
+        return redirect(url_for("room"))
+        # print("Got to room")
+        # return "Got to room"
+
+    # print("successfully allocated")
+    return redirect(url_for("room"))
+    # return "successfully allocated"
+    # return redirect(url_for("room"))
+
+@app.route("/room")
+def room():
+    room = session.get("room")
+    if room is None or session.get("name") is None or room not in rooms:
+        # return redirect(url_for("chat_setting"))
+        return "Wow"
+    message = rooms[room]["messages"]
+    return f"code={room}, message={message}"
+    # return render_template("room.html", code=room, messages=rooms[room]["messages"])
+
+@socketio.on("message")
+def message(data):
+    room = session.get("room")
+    if room not in rooms:
+        return 
+    
+    content = {
+        "name": session.get("name"),
+        "message": data["data"]
+    }
+    send(content, to=room)
+    rooms[room]["messages"].append(content)
+    f"{session.get('name')} said: {data['data']}"
+
+@socketio.on("connect")
+def connect(auth):
+    room = session.get("room")
+    name = session.get("name")
+    if not room or not name:
+        return
+    if room not in rooms:
+        leave_room(room)
+        return
+    
+    join_room(room)
+    send({"name": name, "message": "has entered the room"}, to=room)
+    rooms[room]["members"] += 1
+    print(f"{name} joined room {room}")
+
+@socketio.on("disconnect")
+def disconnect():
+    room = session.get("room")
+    name = session.get("name")
+    leave_room(room)
+
+    if room in rooms:
+        rooms[room]["members"] -= 1
+        if rooms[room]["members"] <= 0:
+            del rooms[room]
+    
+    send({"name": name, "message": "has left the room"}, to=room)
+    print(f"{name} has left the room {room}")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)

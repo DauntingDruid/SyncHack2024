@@ -31,6 +31,7 @@ def register_user(data):
             "age": data['age'],
             "gender": data['gender'],
             "email": data['email'],
+            "password": data['password'],
             "profile_picture": data['profile_picture'],
             "radius": data['radius'], #integer
             "interests": data['interests'], #array of strings
@@ -65,6 +66,7 @@ def testing():
         # data = {
         #     "name": "Tatsuya",
         #     "age": 10,
+        #     "password": "jfdsaofsf",
         #     "gender": "M",
         #     "email": "education@gmail.com",
         #     "profile_picture": "img01.png",

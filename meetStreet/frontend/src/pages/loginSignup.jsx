@@ -1,11 +1,37 @@
 import { useState } from 'react';
 import signup from "../assets/imgs/signup.svg"
+import { post } from '../utils/http';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
+    };
+
+    const loginUser = (e) => {
+        post('login', {
+            email: e.target.email.value,
+            password: e.target.password.value,
+        }).then((data) => {
+            console.log(data);
+        });
+    };
+
+    const signupUser = (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('name', e.target.name.value);
+        formData.append('email', e.target.email.value);
+        formData.append('password', e.target.password.value);
+        formData.append('profile_picture', e.target.profile_picture.files[0]);
+        formData.append('radius', e.target.radius.value);
+        formData.append('interests', e.target.interests.value);
+
+        post('signup', formData).then((data) => {
+            console.log(data);
+        }
+        );
     };
 
     return (
@@ -105,6 +131,7 @@ const AuthPage = () => {
                     <div className="flex items-center justify-between">
                         <button
                             type="submit"
+                            onClick={isLogin? loginUser : signupUser}
                             className="bg-[#6B47DC] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-[#5842BB] transition-colors duration-300"
                         >
                             {isLogin ? 'Login' : 'Sign Up'}

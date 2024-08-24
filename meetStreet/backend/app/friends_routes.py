@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session, redirect, url_for
+from flask import Blueprint, Flask, request, jsonify, session, redirect, url_for
 from dotenv import load_dotenv, find_dotenv
 from flask_socketio import join_room, leave_room, send, SocketIO
 import os
@@ -9,10 +9,11 @@ from bson import Binary
 from string import ascii_uppercase
 from routes import person_profile
 
+friend_routes_blueprint = Blueprint('friend_routes', __name__)
+
 load_dotenv(find_dotenv())
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "foieajf fdfsjofsdp"
 
 @app.route('/', methods=["GET"])
 def home():
@@ -56,7 +57,7 @@ def delete():
     except Exception as error:
         return jsonify({"error": "Error"}), 500
 
-@app.route('/profile', methods=["GET", "POST"])
+@friend_routes_blueprint.route('/profile', methods=["GET", "POST"])
 def testing():
     if request.method == "POST":
         # data = request.get_json()
@@ -127,7 +128,7 @@ def updateFriendRequest(request_id, friend_id):
         print(f"Error: {error}")
 
 # send a request (get user_id and friend_id from Front-end)
-@app.route('/friend-request', methods=["POST"])
+@friend_routes_blueprint.route('/friend-request', methods=["POST"])
 def friend_request():
     user_id = "c1b924ff-7d11-48fb-85d3-d34e7bbde6f0"
     friend_id = "a7b6f24d-916d-4b82-8bb8-ebac11817ca7"

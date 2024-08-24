@@ -1,7 +1,9 @@
 from flask_socketio import join_room, leave_room, send, SocketIO
-from flask import Flask, request, jsonify, session, redirect, url_for
+from flask import Blueprint, Flask, request, jsonify, session, redirect, url_for
 import random
 from string import ascii_uppercase
+
+chat_routes_blueprint = Blueprint('chat_routes', __name__)
 
 app = Flask(__name__)
 
@@ -20,7 +22,7 @@ def generate_unique_code(length):
     
     return code
 
-@app.route("/chat_setting", methods=["POST", "GET"])
+@chat_routes_blueprint.route("/chat_setting", methods=["POST", "GET"])
 def chat_setting():
     session.clear()
     if request.method == "POST":
@@ -55,7 +57,7 @@ def chat_setting():
     # return "successfully allocated"
     # return redirect(url_for("room"))
 
-@app.route("/room")
+@chat_routes_blueprint.route("/room")
 def room():
     room = session.get("room")
     if room is None or session.get("name") is None or room not in rooms:

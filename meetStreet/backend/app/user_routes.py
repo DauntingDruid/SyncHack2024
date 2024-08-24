@@ -1,14 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, Flask, request, jsonify
 from pymongo import MongoClient
 from geopy.distance import geodesic
 import os
 from routes import person_profile
 
+user_routes_blueprint = Blueprint('user_routes', __name__)
+
 app = Flask(__name__)
 
 person_profile = person_profile()
 
-@app.route('/user/discover', methods=['GET'])
+@user_routes_blueprint.route('/user/discover', methods=['GET'])
 def discover_nearby_users():
 
 

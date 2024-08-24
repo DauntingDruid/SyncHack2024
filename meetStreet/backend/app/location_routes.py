@@ -1,15 +1,17 @@
 import pymongo
 from pymongo import MongoClient
-from flask import Flask, request, jsonify
+from flask import Blueprint, Flask, request, jsonify
 import os
 from routes import person_profile
+
+location_routes_blueprint = Blueprint('location_routes', __name__)
 
 app = Flask(__name__)
 
 person_profile = person_profile()
 
 # Update location
-@app.route('/user/location', methods=['POST'])
+@location_routes_blueprint.route('/user/location', methods=['POST'])
 def update_user_location():
     # Parse the request JSON data
     data = request.get_json()

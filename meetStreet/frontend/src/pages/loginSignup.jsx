@@ -1,39 +1,78 @@
 import { useState } from 'react';
-import signup from "../assets/imgs/signup.svg"
+import signup from "../assets/imgs/signup.svg";
 import { post } from '../apis/api';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
+    const [userInfo, setUserInfo] = useState({
+        name: '',
+        email: '',
+        password: '',
+        profile_picture: '',
+        radius: 0,
+        interests: '',
+    });
+
+    console.log("userInfo", userInfo);
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
     };
 
-    const loginUser = (e) => {
-        console.log("login",e.target.value);
-        post('get', {
-            email: e.target.email.value,
-            password: e.target.password.value,
-        }).then((data) => {
+    const updateName = (e) => {
+        setUserInfo({ ...userInfo, name: e.target.value });
+    };
+
+    const updateEmail = (e) => {
+        setUserInfo({ ...userInfo, email: e.target.value });
+    };
+
+    const updatePassword = (e) => {
+        setUserInfo({ ...userInfo, password: e.target.value });
+    };
+
+    const updateProfilePicture = (e) => {
+        setUserInfo({ ...userInfo, profile_picture: e.target.files[0] });
+    };
+
+    const updateRadius = (e) => {
+        setUserInfo({ ...userInfo, radius: e.target.value });
+    };
+
+    const updateInterests = (e) => {
+        setUserInfo({ ...userInfo, interests: e.target.value });
+    };
+
+    const loginUser = async () => {
+        const formData = {}
+        formData['name'] = userInfo.name;
+        // formData['password'] = userInfo.password;
+        console.log(formData);
+        await post('login', formData).then((data) => {
             console.log(data);
         });
     };
 
-    const signupUser = (e) => {
-        console.log("signup",e.target);
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('name', e.target.name.value);
-        formData.append('email', e.target.email.value);
-        formData.append('password', e.target.password.value);
-        formData.append('profile_picture', e.target.profile_picture.files[0]);
-        formData.append('radius', e.target.radius.value);
-        formData.append('interests', e.target.interests.value);
-
-        post('signup', formData).then((data) => {
+    const signupUser = async () => {
+        const formData = {};
+        formData['name'] = userInfo.name;
+        formData['password'] = userInfo.password;
+        formData['profile_picture'] = userInfo.profile_picture;
+        formData['radius'] = userInfo.radius;
+        formData['interests'] = userInfo.interests;
+        console.log(formData);
+        await post('signup', formData).then((data) => {
             console.log(data);
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (isLogin) {
+            loginUser();
+        } else {
+            signupUser();
         }
-        );
     };
 
     return (
@@ -42,7 +81,7 @@ const AuthPage = () => {
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
                     {isLogin ? 'Login' : 'Sign Up'}
                 </h2>
-                <form>
+                <form onSubmit={handleSubmit}>
                     {!isLogin ? (
                         <>
                             <div className="mb-4">
@@ -55,6 +94,7 @@ const AuthPage = () => {
                                     className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
                                     placeholder="Enter your name"
                                     required
+                                    onChange={updateName}
                                 />
                             </div>
                             <div className="mb-4">
@@ -67,6 +107,7 @@ const AuthPage = () => {
                                     className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
                                     placeholder="Enter your password"
                                     required
+                                    onChange={updatePassword}
                                 />
                             </div>
                             <div className="mb-4">
@@ -77,6 +118,7 @@ const AuthPage = () => {
                                     type="file"
                                     id="profile_picture"
                                     className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
+                                    onChange={updateProfilePicture}
                                 />
                             </div>
                             <div className="mb-4">
@@ -88,6 +130,7 @@ const AuthPage = () => {
                                     id="radius"
                                     className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
                                     placeholder="Set radius"
+                                    onChange={updateRadius}
                                 />
                             </div>
                             <div className="mb-4">
@@ -99,24 +142,26 @@ const AuthPage = () => {
                                     id="interests"
                                     className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
                                     placeholder="Enter your interests (comma-separated)"
+                                    onChange={updateInterests}
                                 />
                             </div>
                         </>
-                    ) :
+                    ) : (
                         <>
                             <div className="mb-4">
-                                <div className="mb-4">
-                                    <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
-                                        Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
-                                        placeholder="Enter your name"
-                                        required
-                                    />
-                                </div>
+                                <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
+                                    Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
+                                    placeholder="Enter your name"
+                                    required
+                                    onChange={updateName}
+                                />
+                            </div>
+                            <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
                                     Password
                                 </label>
@@ -126,14 +171,15 @@ const AuthPage = () => {
                                     className="w-full px-4 py-3 rounded-lg bg-gray-200 text-gray-800 focus:outline-none focus:bg-white"
                                     placeholder="Enter your password"
                                     required
+                                    onChange={updatePassword}
                                 />
                             </div>
-                        </>}
+                        </>
+                    )}
 
                     <div className="flex items-center justify-between">
                         <button
                             type="submit"
-                            onClick={isLogin? loginUser : signupUser}
                             className="bg-[#6B47DC] text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-[#5842BB] transition-colors duration-300"
                         >
                             {isLogin ? 'Login' : 'Sign Up'}
@@ -150,7 +196,7 @@ const AuthPage = () => {
                 </div>
             </div>
             <div>
-                <img src={signup} alt="si" className=' w-96 ml-8' />
+                <img src={signup} alt="si" className='w-96 ml-8' />
             </div>
         </div>
     );

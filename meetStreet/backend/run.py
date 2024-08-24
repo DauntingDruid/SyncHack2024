@@ -5,10 +5,11 @@ import pprint
 from pymongo import MongoClient
 import uuid
 from bson import Binary
-
 load_dotenv(find_dotenv())
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "foieajf fdfsjofsdp"
+
 @app.route('/', methods=["GET"])
 def home():
     return "Hello Flask"
@@ -42,8 +43,8 @@ def register_user(data):
             "email": data['email'],
             "profile_picture": data['profile_picture'],
             "preferences": {
-                "radius": data['radius'],
-                "interests": data['interests']
+                "radius": data['preferences']['radius'],
+                "interests": data['preferences']['interests'],
             },
             "friends": data['friends'],
             "friendRequestID": data['friendRequestID'],
@@ -78,10 +79,12 @@ def testing():
             "gender": "M",
             "email": "education@gmail.com",
             "profile_picture": "img01.png",
-            "radius": 100,
-            "interests": [
-                "Eating", "Jogging", "Dancing", "Drinking"
-            ],
+            "preferences": {
+                "radius": 100,
+                "interests": [
+                    "Eating", "Jogging", "Dancing", "Drinking"
+                ]
+            },
             "friends": [
                 ""
             ],
@@ -234,6 +237,53 @@ def reject():
     
 # -----------------------------------------------
 
+# Update a profile
+def updateProfile(id, data):
+    try:
+        update_data = {"$set": data}
+        result = person_profile.update_one({"_id": id}, update_data)
+        if result.matched_count == 0:
+            print(f"None")
+            # print("Fuck")
+        elif result.modified_count == 0:
+            print("Not Modified")
+        else:
+            updated_user = person_profile.find_one({"_id": id})
+            print("Updated Document: ", updated_user)
+    except Exception as error:
+        print(f"Error: {error}")
+
+# Miscellaneous
+@app.route("/setting/<id>", methods=["PUT"])
+def setting(id):
+    try:
+        user_id = id
+        # data = request.get_json()
+        data = {
+            "name": "Sasaki",
+            "age": 20,
+            "gender": "M",
+            "email": "education@gmail.com",
+            "profile_picture": "img01.png",
+            "preferences": {
+                "radius": 500,
+                "interests": [
+                    "Eating", "Jogging", "Drinking"
+                ]
+            },
+            "friends": [
+                ""
+            ],
+            "friendRequestID": "",
+            "isFriendRequest": False,
+        }
+        updateProfile(user_id, data)
+        return jsonify({"id": id, "data": data}), 200
+    except Exception as error:
+        return jsonify({"error": "No data provided"}), 400
+
+# ------------------------------------------------------------
+
 # def insert_test_doc():
 #     collection = test_db.myDatabase
 #     test_document = {
@@ -348,6 +398,8 @@ def reject():
 #     # project_columns()
 #     # update_person_by_id("66c9aeff217629086ae1152d")
 #     return "True"
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

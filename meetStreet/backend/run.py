@@ -71,23 +71,23 @@ def delete():
 @app.route('/profile', methods=["GET", "POST"])
 def testing():
     if request.method == "POST":
-        data = request.get_json()
-        # data = {
-        #     "name": "Tatsuya",
-        #     "age": 10,
-        #     "gender": "M",
-        #     "email": "education@gmail.com",
-        #     "profile_picture": "img01.png",
-        #     "radius": 100,
-        #     "interests": [
-        #         "Eating", "Jogging", "Dancing", "Drinking"
-        #     ],
-        #     "friends": [
-        #         ""
-        #     ],
-        #     "friendRequestID": "",
-        #     "isFriendRequest": False,
-        # }
+        # data = request.get_json()
+        data = {
+            "name": "Tatsuya",
+            "age": 10,
+            "gender": "M",
+            "email": "education@gmail.com",
+            "profile_picture": "img01.png",
+            "radius": 100,
+            "interests": [
+                "Eating", "Jogging", "Dancing", "Drinking"
+            ],
+            "friends": [
+                ""
+            ],
+            "friendRequestID": "",
+            "isFriendRequest": False,
+        }
         if data:
             res = register_user(data)
             return res, 200
@@ -139,8 +139,8 @@ def updateFriendRequest(request_id, friend_id):
 # send a request (get user_id and friend_id from Front-end)
 @app.route('/friend-request', methods=["POST"])
 def friend_request():
-    user_id = "c8be9f03-ed37-40f3-9bd5-8b371d31bf08"
-    friend_id = "745bbe8c-9430-415d-b806-af171cf27c0d"
+    user_id = "c1b924ff-7d11-48fb-85d3-d34e7bbde6f0"
+    friend_id = "a7b6f24d-916d-4b82-8bb8-ebac11817ca7"
     if find_id(friend_id) and find_id(user_id):
         updateFriendRequest(user_id, friend_id)
         return jsonify({"message": "Friend request sent successfully"}), 200
@@ -174,8 +174,8 @@ def addFriends(id, friend_id):
 # accept
 @app.route("/friend-request-accept", methods=["PUT"])
 def accept():
-    user_id = "745bbe8c-9430-415d-b806-af171cf27c0d"
-    request_id = "c8be9f03-ed37-40f3-9bd5-8b371d31bf08"
+    user_id = "a7b6f24d-916d-4b82-8bb8-ebac11817ca7"
+    request_id = "c1b924ff-7d11-48fb-85d3-d34e7bbde6f0"
     
     if find_id(user_id) and find_id(request_id):
         updateFriendRequest(user_id, request_id)
@@ -201,159 +201,153 @@ def accept():
     else:
         return jsonify({"error": "Error"}), 500
 
-def rejectRequest(user_data):
+def rejectRequest(id):
     try:
-        friend_id = user_data['friendRequestID']
         update = {
-            "$set": {"new_field": True, "isFriendRequest": False},
-            "$push": {
-                "friends": friend_id,
+            "$set": {
+                "new_field": True, 
+                "isFriendRequest": False,
                 "friendRequestID": "",
-            }
+            },
         }
-        person_collection.update_one({"_id": user_data['_id']}, update)
-        print("Succefully became friends!")
+        result = person_profile.update_one({"_id": id}, update)
+        if result.matched_count == 0:
+            print(f"None")
+            # print("Fuck")
+        elif result.modified_count == 0:
+            print("Not Modified")
+        else:
+            updated_user = person_profile.find_one({"_id": id})
+            print("Updated Document: ", updated_user)
     except Exception as error:
         print(f"there are some errors: {error}")
-
-def rejected(user_id):
-    try:
-        update = {
-            "set": {"new_field": True, "isFriendRequest": False},
-            "$push": {
-                "friendRequestID": "",
-            }
-        }
-        person_collection.update_one({"_id": user_id}, update)
-        print("Successufully updated")
-    except Exception as error:
-        print(error)
     
 # reject
 @app.route("/friend-request-reject", methods=["PUT"])
-def reject(user_id, friend_id):
-    if (find_id(friend_id)):
-        rejected(friend_id)
-        print("Successfully reject the friend request")
+def reject():
+    request_id = "c1b924ff-7d11-48fb-85d3-d34e7bbde6f0"
+    if (find_id(request_id)):
+        rejectRequest(request_id)
+        return jsonify({"message": "Successfully reject the friend request"})
     else:
-        print("Error")
+        return jsonify({"error": "Error"})
     
 # -----------------------------------------------
 
-def insert_test_doc():
-    collection = test_db.myDatabase
-    test_document = {
-        "name": "Tim",
-        "type": "Test"
-    }
-    inserted_id = collection.insert_one(test_document).inserted_id
-    print(inserted_id)
+# def insert_test_doc():
+#     collection = test_db.myDatabase
+#     test_document = {
+#         "name": "Tim",
+#         "type": "Test"
+#     }
+#     inserted_id = collection.insert_one(test_document).inserted_id
+#     print(inserted_id)
 
-# insert_test_doc()
+# # insert_test_doc()
 
-# automatically created a table
-production = client.production
-# automatically created person_collection if it does not exist
-person_collection = production.person_collection
+# # automatically created a table
+# production = client.production
+# # automatically created person_collection if it does not exist
+# person_collection = production.person_collection
 
-def create_docuemnts():
-    first_names = ["Time", "Sarah", "Jannifer", "Jose", "Brad", "Allen"]
-    last_names = ["Ruscica", "Smith", "Bart", "Cater", "Pit", "Geral"]
-    ages = [21, 40, 23, 19, 34, 67]
+# def create_docuemnts():
+#     first_names = ["Time", "Sarah", "Jannifer", "Jose", "Brad", "Allen"]
+#     last_names = ["Ruscica", "Smith", "Bart", "Cater", "Pit", "Geral"]
+#     ages = [21, 40, 23, 19, 34, 67]
 
-    docs = []
-    for first_name, last_name, age in zip(first_names, last_names, ages):
-        doc = {"first_name": first_name, "last_name": last_name, "age": age}
-        docs.append(doc)
-        # person_collection.insert_one(doc)
-    person_collection.insert_many(docs)
+#     docs = []
+#     for first_name, last_name, age in zip(first_names, last_names, ages):
+#         doc = {"first_name": first_name, "last_name": last_name, "age": age}
+#         docs.append(doc)
+#         # person_collection.insert_one(doc)
+#     person_collection.insert_many(docs)
 
-# create_docuemnts()
+# # create_docuemnts()
 
-def find_all_people():
-    people = person_collection.find()
-    for person in people:
-        printer.pprint(person)
+# def find_all_people():
+#     people = person_collection.find()
+#     for person in people:
+#         printer.pprint(person)
 
-# find_all_people()
+# # find_all_people()
 
-def find_tim():
-    tim = person_collection.find_one({"first_name": "Time"})
-    printer.pprint(tim)
-# find_tim()
+# def find_tim():
+#     tim = person_collection.find_one({"first_name": "Time"})
+#     printer.pprint(tim)
+# # find_tim()
 
-def count_all_people():
-    # We can write both 
-    count = person_collection.count_documents(filter={})
-    print("Number of people, ", count)
-# count_all_people()
+# def count_all_people():
+#     # We can write both 
+#     count = person_collection.count_documents(filter={})
+#     print("Number of people, ", count)
+# # count_all_people()
 
-def get_person_by_id(person_id):
-    from bson.objectid import ObjectId
-    _id = ObjectId(person_id)
-    person = person_collection.find_one({"_id": _id})
-    printer.pprint(person)
+# def get_person_by_id(person_id):
+#     from bson.objectid import ObjectId
+#     _id = ObjectId(person_id)
+#     person = person_collection.find_one({"_id": _id})
+#     printer.pprint(person)
 
-# get_person_by_id("66c9afb734ab4ddcd7193a3a")
+# # get_person_by_id("66c9afb734ab4ddcd7193a3a")
 
-# gte greater than or eeual to 
-def get_age_range(min_age, max_age):
-    query = {"$and": [
-        {"age": {"$gte": min_age}},
-        {"age": {"$lte": max_age}}
-    ]}
-    people = person_collection.find(query).sort("age")
-    for person in people:
-        printer.pprint(person)
+# # gte greater than or eeual to 
+# def get_age_range(min_age, max_age):
+#     query = {"$and": [
+#         {"age": {"$gte": min_age}},
+#         {"age": {"$lte": max_age}}
+#     ]}
+#     people = person_collection.find(query).sort("age")
+#     for person in people:
+#         printer.pprint(person)
         
-# get_age_range(20, 35)
+# # get_age_range(20, 35)
 
-# _id: 0 do not need to have this id 1 need
-def project_columns():
-    columns = {"_id": 0, "first_name": 1, "last_name": 1}
-    people = person_collection.find({}, columns)
-    for person in people:
-        printer.pprint(person)
+# # _id: 0 do not need to have this id 1 need
+# def project_columns():
+#     columns = {"_id": 0, "first_name": 1, "last_name": 1}
+#     people = person_collection.find({}, columns)
+#     for person in people:
+#         printer.pprint(person)
 
-# project_columns()
+# # project_columns()
 
-def update_person_by_id(person_id):
-    from bson.objectid import ObjectId
-    _id = ObjectId(person_id)
-    # inc: increment by 1
-    # all_updates = {
-    #     "$set": {"new_field": True},
-    #     "$inc": {"age": 1},
-    #     "$rename": {"first_name": "first"}
-    # }
-    # person_collection.update_one({"_id": _id}, all_updates) 
+# def update_person_by_id(person_id):
+#     from bson.objectid import ObjectId
+#     _id = ObjectId(person_id)
+#     # inc: increment by 1
+#     # all_updates = {
+#     #     "$set": {"new_field": True},
+#     #     "$inc": {"age": 1},
+#     #     "$rename": {"first_name": "first"}
+#     # }
+#     # person_collection.update_one({"_id": _id}, all_updates) 
     
-    # remove the person
-    person_collection.update_one({"_id": _id}, {"$unset": {"new_field": ""}})  
+#     # remove the person
+#     person_collection.update_one({"_id": _id}, {"$unset": {"new_field": ""}})  
     
-# replace a document
-def replace_one(person_id):
-    from bson.objectid import ObjectId
-    _id = ObjectId(person_id)
+# # replace a document
+# def replace_one(person_id):
+#     from bson.objectid import ObjectId
+#     _id = ObjectId(person_id)
     
-    new_doc = {
-        "first_name": "new first name",
-        "last_name": "new last name",
-        "age": 100
-    }
-    person_collection.update_one({"_id": _id}, new_doc)
+#     new_doc = {
+#         "first_name": "new first name",
+#         "last_name": "new last name",
+#         "age": 100
+#     }
+#     person_collection.update_one({"_id": _id}, new_doc)
     
-# delete 
-def delete_doc_by_id(person_id):
-    from bson.objectid import ObjectId
-    _id = ObjectId(person_id)
-    person_collection.delete_one({"_id": _id})
+# # delete 
+# def delete_doc_by_id(person_id):
+#     from bson.objectid import ObjectId
+#     _id = ObjectId(person_id)
+#     person_collection.delete_one({"_id": _id})
     
-@app.route('/get-items', methods=["GET"])
-def items():
-    # project_columns()
-    # update_person_by_id("66c9aeff217629086ae1152d")
-    return "True"
+# @app.route('/get-items', methods=["GET"])
+# def items():
+#     # project_columns()
+#     # update_person_by_id("66c9aeff217629086ae1152d")
+#     return "True"
 
 if __name__ == "__main__":
     app.run(debug=True)

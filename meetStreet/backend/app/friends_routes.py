@@ -49,7 +49,7 @@ def register_user(data):
 # to get a better format
 printer = pprint.PrettyPrinter()
 
-@app.route('/deleteAll', methods=["DELETE"])
+@friend_routes_blueprint.route('/deleteAll', methods=["DELETE"])
 def delete():
     try:
         result = person_profile.delete_many({})
@@ -67,12 +67,10 @@ def testing():
             "gender": "M",
             "email": "education@gmail.com",
             "profile_picture": "img01.png",
-            "preferences": {
-                "radius": 100,
-                "interests": [
-                    "Eating", "Jogging", "Dancing", "Drinking"
-                ]
-            },
+            "radius": 100,
+            "interests": [
+                "Eating", "Jogging", "Dancing", "Drinking"
+            ],
             "friends": [
                 ""
             ],
@@ -163,7 +161,7 @@ def addFriends(id, friend_id):
         print(f"there are some errors: {error}")
     
 # accept
-@app.route("/friend-request-accept", methods=["PUT"])
+@friend_routes_blueprint.route("/friend-request-accept", methods=["PUT"])
 def accept():
     user_id = "a7b6f24d-916d-4b82-8bb8-ebac11817ca7"
     request_id = "c1b924ff-7d11-48fb-85d3-d34e7bbde6f0"
@@ -214,7 +212,7 @@ def rejectRequest(id):
         print(f"there are some errors: {error}")
     
 # reject
-@app.route("/friend-request-reject", methods=["PUT"])
+@friend_routes_blueprint.route("/friend-request-reject", methods=["PUT"])
 def reject():
     request_id = "c1b924ff-7d11-48fb-85d3-d34e7bbde6f0"
     if (find_id(request_id)):
@@ -242,7 +240,7 @@ def updateProfile(id, data):
         print(f"Error: {error}")
 
 # Miscellaneous
-@app.route("/setting/<id>", methods=["PUT"])
+@friend_routes_blueprint.route("/setting/<id>", methods=["PUT"])
 def setting(id):
     try:
         user_id = id

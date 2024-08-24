@@ -11,7 +11,7 @@ app = Flask(__name__)
 person_profile = person_profile()
 
 # Update location
-@location_routes_blueprint.route('/user/location', methods=['POST'])
+@location_routes_blueprint.route('/location', methods=['POST'])
 def update_user_location():
     # Parse the request JSON data
     data = request.get_json()

@@ -7,7 +7,7 @@ const WelcomePage = () => {
   // const dispatch = useDispatch();
 
   const routeToPage = () =>{
-    navigate(`/home`);
+    navigate(`/loginSignup`);
   }
 
 

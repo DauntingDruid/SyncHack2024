@@ -54,4 +54,4 @@ def discover_nearby_users():
     return jsonify({'nearby_users': nearby_users}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)    

@@ -8,6 +8,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaUserFriends } from "react-icons/fa";
 import { FaCog } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { post } from '../apis/api';
 
 
 const Home = () => {
@@ -35,22 +36,19 @@ const Home = () => {
 
   // TO UPDATE
   useEffect(() => {
-    // Replace with your actual API endpoint
-    axios.get('/api/nearby-users')
-      .then(response => {
-        setUsers([
-          {
-            id: 2,
-            name: "Jane Smith",
-            profilePicture: "https://via.placeholder.com/50", // Replace with actual image URL
-            coordinates: { lat: 51.515, lng: -0.09 },
-          }
-        ]);
-      })
-      .catch(error => {
-        console.error('Error fetching users:', error);
+    const discoverUsers = async () => {
+      const formData = {};
+      formData['user_id'] = localStorage.getItem("userId");
+      formData['coordinates'] = location;
+      formData['radius'] = 10;
+      
+      console.log(formData);
+      await post('user/discover', formData).then((data) => {
+          console.log(data);
       });
-  }, []);
+    };
+    discoverUsers();
+  }, [location]);
 
   useMemo(() => {
   const getCoords = async () => {
@@ -64,6 +62,8 @@ const Home = () => {
   }
   getCoords();
   }, []);
+
+
 
   return (
     <div className="w-full h-full flex justify-center items-center p-12">

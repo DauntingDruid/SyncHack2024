@@ -140,6 +140,7 @@ const Home = () => {
   const [displayCard, setDisplayCard] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [location, setLocation] = useState({ lat: 33.8922761, lng: 151.292 });
+  const [showChatbox, setShowChatbox] = useState(false);
 
   console.log("lat lng ", location);
   // console.log("selectedUser", selectedUser);
@@ -148,6 +149,11 @@ const Home = () => {
     setDisplayCard(true);
     setSelectedUser(user);
   }
+
+  const handleStartChat = () => {
+    setShowChatbox(true);
+    setDisplayCard(false); // Close the user info card
+  };
   
   // TO UPDATE
   const mainUser = {
@@ -205,7 +211,7 @@ const Home = () => {
       {displayCard && 
           <div className="absolute top-1/5 left-1/5 bg-gray-800 text-white rounded-3xl overflow-hidden shadow-lg w-1/3 h-4/5">
             <img
-              src="https://images.unsplash.com/photo-1624789389787-91e252ff8dac?q=80&w=3061&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Replace with the actual profile image URL
+              src={selectedUser?.profile_picture}
               alt="User profile"
               className="w-full h-full object-cover"
             />
@@ -257,13 +263,42 @@ const Home = () => {
                 <button onClick={() => {setDisplayCard(false)}} className="bg-black text-white px-4 py-2 rounded-full">
                   ✕
                 </button>
-                <button className="bg-purple-500 text-white w-fit px-4 py-2 rounded-full">
+                <button onClick={() => handleStartChat()} className="bg-purple-500 text-white w-fit px-4 py-2 rounded-full">
                   Message and meet someone new! 
                   {/* ♥ */}
                 </button>
               </div>
             </div>
           </div>
+      }
+      {showChatbox && 
+        <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-4 shadow-lg w-full max-w-md mx-auto">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">{selectedUser?.name}</h2>
+            <button onClick={() => setShowChatbox(false)} className="text-gray-500">✕</button>
+          </div>
+          <div className="mt-4">
+            <div className="mb-2 text-gray-500">Hey there! I stumbled upon your profile and couldn't resist saying hi. How’s it going?</div>
+            <div className="mb-2 bg-purple-100 p-2 rounded-lg text-gray-700">Hi! I'm doing well, just relaxing after a long day. How about you?</div>
+            <div className="mb-2 bg-purple-200 p-2 rounded-lg text-gray-700">
+              <div className="flex items-center justify-between">
+                <span>00:06 / 00:26</span>
+                <button className="bg-purple-500 text-white px-2 py-1 rounded-full">▶</button>
+              </div>
+            </div>
+            <div className="text-gray-500">Absolutely! I love hiking. One of my favorite trails is the Cascade Falls trail.</div>
+          </div>
+          <div className="mt-4 flex items-center">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              className="flex-grow p-2 border rounded-l-lg"
+            />
+            <button className="bg-purple-500 text-white px-4 py-2 rounded-r-lg">
+              Send
+            </button>
+          </div>
+        </div>
       }
     </div>
   );

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import signup from "../assets/imgs/signup.svg";
 import { get, post } from '../apis/api';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
+    const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [userInfo, setUserInfo] = useState({
         name: '',
@@ -52,6 +54,8 @@ const AuthPage = () => {
         console.log(formData);
         await post('friend/profile/login', formData).then((data) => {
             console.log(data);
+            
+            localStorage.setItem("userId", data)
         });
     };
 
@@ -67,6 +71,8 @@ const AuthPage = () => {
         console.log(formData);
         await post('friend/profile/signup', formData).then((data) => {
             console.log(data);
+            
+            localStorage.setItem("userInfo", data)
         });
     };
 

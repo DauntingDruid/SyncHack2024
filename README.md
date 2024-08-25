@@ -6,6 +6,8 @@
 Start the React development server:
      `npm run dev`
 
+localstorage : userId, userInfo
+
 ## Backend 
 
 

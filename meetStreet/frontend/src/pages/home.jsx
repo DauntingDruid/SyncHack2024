@@ -7,9 +7,11 @@ import { GoHomeFill } from "react-icons/go";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaUserFriends } from "react-icons/fa";
 import { FaCog } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 
 const Home = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [displayCard, setDisplayCard] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);

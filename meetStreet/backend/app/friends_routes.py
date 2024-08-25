@@ -112,11 +112,7 @@ def signup():
     
     else:
         try:
-            print(request)
-            name = request.get_json()
-
-            print(name["name"])
-            data = person_profile.find({"name": name["name"]})
+            data = person_profile.find()
             # data = person_profile.find()
             doc = []
             for document in data:

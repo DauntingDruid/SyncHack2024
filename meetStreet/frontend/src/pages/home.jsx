@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -15,9 +15,11 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [displayCard, setDisplayCard] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [location, setLocation] = useState({ lat: -1, lng: -1 });
 
-  console.log("selectedUser", selectedUser);
-  console.log("displayCard", displayCard);
+  console.log("lat lng ", location);
+  // console.log("selectedUser", selectedUser);
+  // console.log("displayCard", displayCard);
   const getUserInfo = (user) => {
     setDisplayCard(true);
     setSelectedUser(user);
@@ -50,10 +52,23 @@ const Home = () => {
       });
   }, []);
 
+  useMemo(() => {
+  const getCoords = async () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log("position", position);
+      setLocation({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      });
+    });
+  }
+  getCoords();
+  }, []);
+
   return (
     <div className="w-full h-full flex justify-center items-center p-12">
       <div className='w-full h-full relative '>
-          <MapComponent users={users} mainUser={mainUser} getUserInfo={getUserInfo} />
+          <MapComponent users={users} mainUser={mainUser} location={location} getUserInfo={getUserInfo} />
         <div className='w-full h-20 absolute bottom-0 mb-12'>
           <div className='w-full h-full justify-center items-center flex'>
             <div className='w-96 h-20 flex justify-around items-center rounded-xl bg-white'>
@@ -132,7 +147,7 @@ const Home = () => {
   );
 };
 
-const MapComponent = ({ users, mainUser, getUserInfo }) => {
+const MapComponent = ({ users, mainUser, location, getUserInfo }) => {
   const [hoveredMarker, setHoveredMarker] = useState(null);
   
   const createCustomIcon = (user) => {
@@ -162,7 +177,7 @@ const MapComponent = ({ users, mainUser, getUserInfo }) => {
 
   return (
     <MapContainer
-      center={[mainUser.coordinates.lat, mainUser.coordinates.lng]} // Default center coordinates
+      center={[-33.8922705, 151.1911125]} // Default center coordinates
       zoom={13} // Default zoom level
       style={{ width: '100%', height: '90vh', zIndex: 0, borderRadius: '100px' }}
         >
@@ -173,7 +188,7 @@ const MapComponent = ({ users, mainUser, getUserInfo }) => {
       
       {/* Main User Marker */}
       <Marker
-        position={[mainUser.coordinates.lat, mainUser.coordinates.lng]}
+        position={[location.lat, location.lng]}
         icon={createMainUserIcon(mainUser)}
       >
         <Popup className="custom-popup">

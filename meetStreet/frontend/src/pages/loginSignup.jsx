@@ -54,8 +54,10 @@ const AuthPage = () => {
         console.log(formData);
         await post('friend/profile/login', formData).then((data) => {
             console.log(data);
+            localStorage.setItem("userInfo", data)
+            localStorage.setItem("userId", data._id)
             navigate("/home")
-            localStorage.setItem("userId", data)
+  
         });
     };
 
@@ -71,8 +73,9 @@ const AuthPage = () => {
         console.log(formData);
         await post('friend/profile/signup', formData).then((data) => {
             console.log(data);
-            navigate("/home")
             localStorage.setItem("userInfo", data)
+            navigate("/home")
+   
         });
     };
 

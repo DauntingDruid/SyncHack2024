@@ -13,10 +13,133 @@ import { post } from '../apis/api';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState(
+    [
+      {
+          "_id": "d35f8b48-2c7f-4d5c-88a4-5a4f8f0e8c31",
+          "name": "Alice Smith",
+          "age": 24,
+          "gender": "F",
+          "password": "password1",
+          "profile_picture": "https://randomuser.me/api/portraits/women/1.jpg",
+          "radius": 50,
+          "interests": ["Reading", "Yoga", "Traveling"],
+          "latitude": -33.8871,
+          "longitude": 151.1913
+      },
+      {
+          "_id": "f19a6e5c-1b2e-4f6c-a18a-6e5f8a8c31d2",
+          "name": "John Doe",
+          "age": 26,
+          "gender": "M",
+          "password": "password2",
+          "profile_picture": "https://randomuser.me/api/portraits/men/2.jpg",
+          "radius": 100,
+          "interests": ["Cycling", "Photography", "Cooking"],
+          "latitude": -33.8898,
+          "longitude": 151.1857
+      },
+      {
+          "_id": "b12a7f5d-3c4d-4f2e-b27f-3d5f9a9c32e3",
+          "name": "Emily Brown",
+          "age": 22,
+          "gender": "F",
+          "password": "password3",
+          "profile_picture": "https://randomuser.me/api/portraits/women/3.jpg",
+          "radius": 75,
+          "interests": ["Dancing", "Hiking", "Art"],
+          "latitude": -33.8917,
+          "longitude": 151.1950
+      },
+      {
+          "_id": "e23b8c5e-4d5f-4e2f-a38b-4c6f9b9d33f4",
+          "name": "Michael Johnson",
+          "age": 28,
+          "gender": "M",
+          "password": "password4",
+          "profile_picture": "https://randomuser.me/api/portraits/men/4.jpg",
+          "radius": 60,
+          "interests": ["Running", "Gaming", "Music"],
+          "latitude": -33.8883,
+          "longitude": 151.1931
+      },
+      {
+          "_id": "f34c9d6f-5e6f-4f3f-b49c-5d7f9c9e34f5",
+          "name": "Sophia Davis",
+          "age": 23,
+          "gender": "F",
+          "password": "password5",
+          "profile_picture": "https://randomuser.me/api/portraits/women/5.jpg",
+          "radius": 40,
+          "interests": ["Painting", "Swimming", "Photography"],
+          "latitude": -33.8865,
+          "longitude": 151.1902
+      },
+      {
+          "_id": "g45d0e7f-6f7f-4f4f-c50d-6e8f9d9f35f6",
+          "name": "James Wilson",
+          "age": 27,
+          "gender": "M",
+          "password": "password6",
+          "profile_picture": "https://randomuser.me/api/portraits/men/6.jpg",
+          "radius": 80,
+          "interests": ["Soccer", "Fishing", "Cooking"],
+          "latitude": -33.8887,
+          "longitude": 151.1968
+      },
+      {
+          "_id": "h56e1f8g-7g8g-4g5g-d61e-7f9g0e9g36g7",
+          "name": "Olivia Martinez",
+          "age": 25,
+          "gender": "F",
+          "password": "password7",
+          "profile_picture": "https://randomuser.me/api/portraits/women/7.jpg",
+          "radius": 70,
+          "interests": ["Traveling", "Yoga", "Music"],
+          "latitude": -33.8910,
+          "longitude": 151.1924
+      },
+      {
+          "_id": "i67f2g9h-8h9h-4h6h-e72f-8g0h1f0h37h8",
+          "name": "Liam Lee",
+          "age": 29,
+          "gender": "M",
+          "password": "password8",
+          "profile_picture": "https://randomuser.me/api/portraits/men/8.jpg",
+          "radius": 90,
+          "interests": ["Photography", "Hiking", "Reading"],
+          "latitude": -33.8859,
+          "longitude": 151.1907
+      },
+      {
+          "_id": "j78g3h0i-9i0i-4i7i-f83g-9h1i2g1i38i9",
+          "name": "Isabella Garcia",
+          "age": 21,
+          "gender": "F",
+          "password": "password9",
+          "profile_picture": "https://randomuser.me/api/portraits/women/9.jpg",
+          "radius": 65,
+          "interests": ["Dancing", "Cooking", "Traveling"],
+          "latitude": -33.8869,
+          "longitude": 151.1974
+      },
+      {
+          "_id": "k89h4i1j-0j1j-4j8j-g94h-0i2j3h2j39j0",
+          "name": "Ethan White",
+          "age": 26,
+          "gender": "M",
+          "password": "password10",
+          "profile_picture": "https://randomuser.me/api/portraits/men/10.jpg",
+          "radius": 55,
+          "interests": ["Running", "Gaming", "Music"],
+          "latitude": -33.8885,
+          "longitude": 151.1942
+      }
+  ]
+);
   const [displayCard, setDisplayCard] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [location, setLocation] = useState({ lat: -1, lng: -1 });
+  const [location, setLocation] = useState({ lat: 33.8922761, lng: 151.292 });
 
   console.log("lat lng ", location);
   // console.log("selectedUser", selectedUser);
@@ -35,20 +158,19 @@ const Home = () => {
   };
 
   // TO UPDATE
-  useEffect(() => {
-    const discoverUsers = async () => {
-      const formData = {};
-      formData['user_id'] = localStorage.getItem("userId");
-      formData['coordinates'] = location;
-      formData['radius'] = 10;
-      
-      console.log(formData);
-      await post('user/discover', formData).then((data) => {
-          console.log(data);
-      });
-    };
-    discoverUsers();
-  }, [location]);
+  // useEffect(() => {
+  //   const discoverUsers = async () => {
+  //     const formData = {};
+  //     formData['user_id'] = await localStorage.getItem("userId");
+  //     formData['coordinates'] = location;
+  //     formData['radius'] = 10000;
+  //     console.log("LOCALSTORAGE * ",formData['user_id']);
+  //     await post('user/discover', formData).then((data) => {
+  //         console.log(data);
+  //     });
+  //   };
+  //   discoverUsers();
+  // }, [location]);
 
   useMemo(() => {
   const getCoords = async () => {
@@ -199,7 +321,7 @@ const MapComponent = ({ users, mainUser, location, getUserInfo }) => {
       {users.map((user) => (
         <Marker
           key={user.id}
-          position={[user.coordinates.lat, user.coordinates.lng]}
+          position={[user.latitude, user.longitude]}
           icon={createCustomIcon(user)}
           eventHandlers={{
             mouseover: () => {

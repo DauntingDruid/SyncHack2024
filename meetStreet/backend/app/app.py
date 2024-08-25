@@ -3,6 +3,7 @@ from flask import Flask
 # from flask_socketio import SocketIO
 from dotenv import load_dotenv, find_dotenv
 import os
+from flask_cors import CORS
 
 # Import routes from the different modules
 # from chat_routes import chat_routes_blueprint
@@ -14,7 +15,9 @@ from user_routes import user_routes_blueprint
 load_dotenv(find_dotenv())
 
 app = Flask(__name__)
+CORS(app)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "default_secret_key")
+# CORS(app) 
 # socketio = SocketIO(app)
 
 # Register Blueprints
@@ -26,3 +29,4 @@ app.register_blueprint(user_routes_blueprint, url_prefix='/user')
 if __name__ == "__main__":
     # socketio.run(app, debug=True)
     app.run(debug=True)
+    # app.run(ssl_context='adhoc')

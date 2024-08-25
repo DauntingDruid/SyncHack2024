@@ -8,6 +8,7 @@ import uuid
 from bson import Binary
 from string import ascii_uppercase
 from routes import person_profile
+# from flask_cors import cross_origin
 
 friend_routes_blueprint = Blueprint('friend_routes', __name__)
 
@@ -16,6 +17,7 @@ load_dotenv(find_dotenv())
 app = Flask(__name__)
 
 @app.route('/', methods=["GET"])
+# @cross_origin()
 def home():
     return "Hello Flask"
 
@@ -30,14 +32,14 @@ def register_user(data):
             "name": data['name'],
             "age": data['age'],
             "gender": data['gender'],
-            "email": data['email'],
+            # "email": data['email'],
             "password": data['password'],
             "profile_picture": data['profile_picture'],
             "radius": data['radius'], #integer
             "interests": data['interests'], #array of strings
-            "friends": data['friends'],
-            "friendRequestID": data['friendRequestID'],
-            "isFriendRequest": data['isFriendRequest'],
+            # "friends": data['friends'],
+            # "friendRequestID": data['friendRequestID'],
+            # "isFriendRequest": data['isFriendRequest'],
         }
         # print(doc)
         result = person_profile.insert_one(doc)
@@ -59,8 +61,30 @@ def delete():
         return jsonify({"error": "Error"}), 500
 
 # login & signup
-@friend_routes_blueprint.route('/profile', methods=["GET", "POST"])
-def testing():
+@friend_routes_blueprint.route('/profile/login', methods=["POST"])
+def login():
+    try:
+        print(request)
+        name = request.get_json()
+        # name = {
+        #     "name": "Tatsuya",
+        # }
+
+        print(name["name"])
+        data = person_profile.find({"name": name["name"]})
+        # data = person_profile.find()
+        doc = []
+        for document in data:
+            printer.pprint(document)
+            doc.append(document)
+        print(f"Success")
+        return jsonify(doc[0])
+    except Exception as error:
+        print(f"Error: {error}")
+        return {}
+    
+@friend_routes_blueprint.route('/profile/signup', methods=["GET", "POST"])
+def signup():
     if request.method == "POST":
         data = request.get_json()
         # data = {
@@ -88,7 +112,12 @@ def testing():
     
     else:
         try:
-            data = person_profile.find()
+            print(request)
+            name = request.get_json()
+
+            print(name["name"])
+            data = person_profile.find({"name": name["name"]})
+            # data = person_profile.find()
             doc = []
             for document in data:
                 printer.pprint(document)

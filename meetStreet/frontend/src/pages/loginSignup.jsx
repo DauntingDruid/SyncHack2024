@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import signup from "../assets/imgs/signup.svg";
-import { post } from '../apis/api';
+import { get, post } from '../apis/api';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [userInfo, setUserInfo] = useState({
         name: '',
         email: '',
+        age: '',
+        gender: '',
         password: '',
         profile_picture: '',
         radius: 0,
@@ -48,7 +50,7 @@ const AuthPage = () => {
         formData['name'] = userInfo.name;
         // formData['password'] = userInfo.password;
         console.log(formData);
-        await post('login', formData).then((data) => {
+        await post('friend/profile/login', formData).then((data) => {
             console.log(data);
         });
     };
@@ -57,11 +59,13 @@ const AuthPage = () => {
         const formData = {};
         formData['name'] = userInfo.name;
         formData['password'] = userInfo.password;
+        formData['gender'] = userInfo.gender;
+        formData['age'] = userInfo.age;
         formData['profile_picture'] = userInfo.profile_picture;
         formData['radius'] = userInfo.radius;
         formData['interests'] = userInfo.interests;
         console.log(formData);
-        await post('signup', formData).then((data) => {
+        await post('friend/profile/signup', formData).then((data) => {
             console.log(data);
         });
     };
